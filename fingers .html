@@ -1,0 +1,43 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html>
+<head>
+  <title>Fingerprint Attendance</title>
+  <style>
+    body { font-family: sans-serif; background: #111; color: #fff; text-align: center; padding-top: 50px; }
+    input, button { padding: 10px; margin: 10px; font-size: 16px; }
+    #log { margin-top: 30px; border-top: 1px solid #444; padding-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Fingerprint Attendance</h1>
+  <input type="text" id="username" placeholder="Enter your name" required />
+  <button onclick="authenticate()">Verify Fingerprint</button>
+  <div id="log"></div>
+
+  <script>
+    async function authenticate() {
+      const username = document.getElementById('username').value.trim();
+      if (!username) return alert("Enter your name first");
+
+      try {
+        const publicKey = {
+          challenge: new Uint8Array(32),
+          timeout: 60000,
+          userVerification: "required"
+        };
+
+        const cred = await navigator.credentials.get({ publicKey });
+        if (cred) {
+          const time = new Date().toLocaleString();
+          const entry = `username -{time}`;localStorage.setItem(`entry-Date.now()`, entry);
+          document.getElementById("log").innerHTML += `<div>{entry}</div>`;
+        } else {
+          alert("Fingerprint verification failed.");
+        }
+      } catch (err) {
+        alert("Fingerprint not supported or denied: " + err.message);
+      }
+    }
+  </script>
+</body>
+</html>
